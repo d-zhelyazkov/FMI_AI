@@ -1,7 +1,6 @@
 package impl;
 
 import api.Edge;
-import api.EdgeBase;
 import api.Graph;
 import api.GraphSearch;
 import api.Heuristic;
@@ -18,7 +17,7 @@ import java.util.Stack;
 /**
  * Created by dzhel on 23.10.2017.
  */
-public class AStarSearch<T extends Node> implements GraphSearch<T> {
+public class AStarSearch<T extends Node, V extends Edge<T>> implements GraphSearch<T, V> {
 
     private final Heuristic<T> heuristic;
 
@@ -27,14 +26,15 @@ public class AStarSearch<T extends Node> implements GraphSearch<T> {
     }
 
     @Override
-    public Collection<Edge<T>> findPath(T start, T goal, Graph<T> graph) throws NoPathFoundException {
-        Queue<AStarTraverseEntry<T>> traverseQueue = new PriorityQueue<>();
+    public Collection<V> findPath(T start, T goal, Graph<T, V> graph) throws NoPathFoundException {
+
+        Queue<AStarTraverseEntry<T, V>> traverseQueue = new PriorityQueue<>();
         traverseQueue.add(new BeginEntry<>(start));
         Set<T> traversedNodes = new HashSet<>();
 
         while (!traverseQueue.isEmpty()) {
-            AStarTraverseEntry<T> traverseEntry = traverseQueue.poll();
-            T node = traverseEntry.edge.to();
+            AStarTraverseEntry<T, V> traverseEntry = traverseQueue.poll();
+            T node = traverseEntry.getNode();
             if (traversedNodes.contains(node)) {
                 continue;
             }
@@ -44,25 +44,27 @@ public class AStarSearch<T extends Node> implements GraphSearch<T> {
                 return constructPathStack(traverseEntry);
             }
 
-            Collection<Edge<T>> edges = graph.getEdges(node);
-            for (Edge<T> edge : edges) {
-                double cost = traverseEntry.cost + edge.weight();
-                double estimation = heuristic.estimate(edge.to(), goal);
-                traverseQueue.add(
-                        new AStarTraverseEntry<T>(edge, traverseEntry, cost, estimation));
-            }
+            Collection<V> edges = graph.getEdges(node);
+            for (V edge : edges) {
+                if (traversedNodes.contains(edge.to())) {
+                    continue;
+                }
 
+                double cost = traverseEntry.getCost() + edge.weight();
+                double estimation = heuristic.calcDistance(edge.to(), goal).doubleValue();
+                traverseQueue.add(new AStarTraverseEntry<>(edge, traverseEntry, cost, estimation));
+            }
         }
 
         throw new NoPathFoundException();
     }
 
-    private Stack<Edge<T>> constructPathStack(AStarTraverseEntry<T> traverseEntry) {
-        Stack<Edge<T>> path = new Stack<>();
+    private Stack<V> constructPathStack(AStarTraverseEntry<T, V> traverseEntry) {
+        Stack<V> path = new Stack<>();
 
         do {
-            path.add(traverseEntry.edge);
-            traverseEntry = traverseEntry.prevEntry;
+            path.add(traverseEntry.getEdge());
+            traverseEntry = traverseEntry.getPrevEntry();
 
         } while (!(traverseEntry instanceof BeginEntry));
 
@@ -71,16 +73,16 @@ public class AStarSearch<T extends Node> implements GraphSearch<T> {
 
 }
 
-class AStarTraverseEntry<T extends Node> implements Comparable<AStarTraverseEntry<T>> {
-    final Edge<T> edge;
+class AStarTraverseEntry<T extends Node, V extends Edge<T>> implements Comparable<AStarTraverseEntry<T, V>> {
+    private final V edge;
 
-    final AStarTraverseEntry<T> prevEntry;
+    private final AStarTraverseEntry<T, V> prevEntry;
 
-    final double cost;
+    private final double cost;
 
-    final double estimatedRemainingCost;
+    private final double estimatedRemainingCost;
 
-    AStarTraverseEntry(Edge<T> edge, AStarTraverseEntry<T> prevEntry, double cost, double estimatedRemainingCost) {
+    AStarTraverseEntry(V edge, AStarTraverseEntry<T, V> prevEntry, double cost, double estimatedRemainingCost) {
         this.edge = edge;
         this.prevEntry = prevEntry;
         this.cost = cost;
@@ -88,16 +90,38 @@ class AStarTraverseEntry<T extends Node> implements Comparable<AStarTraverseEntr
     }
 
     @Override
-    public int compareTo(AStarTraverseEntry<T> o) {
+    public int compareTo(AStarTraverseEntry<T, V> o) {
         return Double.compare(cost + estimatedRemainingCost, o.cost + o.estimatedRemainingCost);
+    }
+
+    public V getEdge() {
+        return edge;
+    }
+
+    public T getNode() {
+        return edge.to();
+    }
+
+    public AStarTraverseEntry<T, V> getPrevEntry() {
+        return prevEntry;
+    }
+
+    public double getCost() {
+        return cost;
     }
 }
 
-class BeginEntry<T extends Node> extends AStarTraverseEntry<T> {
+class BeginEntry<T extends Node, V extends Edge<T>> extends AStarTraverseEntry<T, V> {
 
-    BeginEntry(T start) {
-        super(
-                new EdgeBase<>(null, start, 0),
-                null, 0, 0);
+    private final T startNode;
+
+    BeginEntry(T startNode) {
+        super(null, null, 0, 0);
+        this.startNode = startNode;
+    }
+
+    @Override
+    public T getNode() {
+        return startNode;
     }
 }
