@@ -8,11 +8,14 @@ import api.NoPathFoundException;
 import api.Node;
 
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Created by dzhel on 23.10.2017.
@@ -28,45 +31,62 @@ public class AStarSearch<T extends Node, V extends Edge<T>> implements GraphSear
     @Override
     public Collection<V> findPath(T start, T goal, Graph<T, V> graph) throws NoPathFoundException {
 
+        Set<T> closedSet = new HashSet<>();
+        Map<T, AStarTraverseEntry<T, V>> openSet = new HashMap<>();
+        BeginEntry<T, V> beginEntry = new BeginEntry<>(start);
+        openSet.put(start, beginEntry);
         Queue<AStarTraverseEntry<T, V>> traverseQueue = new PriorityQueue<>();
-        traverseQueue.add(new BeginEntry<>(start));
-        Set<T> traversedNodes = new HashSet<>();
+        traverseQueue.add(beginEntry);
 
         while (!traverseQueue.isEmpty()) {
             AStarTraverseEntry<T, V> traverseEntry = traverseQueue.poll();
             T node = traverseEntry.getNode();
-            if (traversedNodes.contains(node)) {
+            if (closedSet.contains(node)) {
                 continue;
             }
-            traversedNodes.add(node);
-
             if (node.equals(goal)) {
-                return constructPathStack(traverseEntry);
+                return constructPath(traverseEntry);
             }
+
+            closedSet.add(node);
+            openSet.remove(node);
 
             Collection<V> edges = graph.getEdges(node);
             for (V edge : edges) {
-                if (traversedNodes.contains(edge.to())) {
+                T neighbour = edge.to();
+                if (closedSet.contains(neighbour)) {
                     continue;
                 }
 
                 double cost = traverseEntry.getCost() + edge.weight();
-                double estimation = heuristic.calcDistance(edge.to(), goal).doubleValue();
-                traverseQueue.add(new AStarTraverseEntry<>(edge, traverseEntry, cost, estimation));
+                AStarTraverseEntry<T, V> neighbourTraverseEntry = openSet.get(neighbour);
+                double estimation;
+                if (neighbourTraverseEntry != null) {
+                    if (cost >= neighbourTraverseEntry.getCost()) {
+                        continue;
+                    }
+
+                    estimation = neighbourTraverseEntry.getEstimatedRemainingCost();
+                } else {
+                    estimation = heuristic.calcDistance(neighbour, goal).doubleValue();
+                }
+
+                neighbourTraverseEntry = new AStarTraverseEntry<>(edge, traverseEntry, cost, estimation);
+                openSet.put(neighbour, neighbourTraverseEntry);
+                traverseQueue.add(neighbourTraverseEntry);
+
             }
         }
 
         throw new NoPathFoundException();
     }
 
-    private Stack<V> constructPathStack(AStarTraverseEntry<T, V> traverseEntry) {
-        Stack<V> path = new Stack<>();
+    private Collection<V> constructPath(AStarTraverseEntry<T, V> traverseEntry) {
+        Deque<V> path = new LinkedList<V>();
 
-        do {
-            path.add(traverseEntry.getEdge());
-            traverseEntry = traverseEntry.getPrevEntry();
-
-        } while (!(traverseEntry instanceof BeginEntry));
+        for (; !(traverseEntry instanceof BeginEntry); traverseEntry = traverseEntry.getPrevEntry()) {
+            path.addFirst(traverseEntry.getEdge());
+        }
 
         return path;
     }
@@ -108,6 +128,10 @@ class AStarTraverseEntry<T extends Node, V extends Edge<T>> implements Comparabl
 
     public double getCost() {
         return cost;
+    }
+
+    public double getEstimatedRemainingCost() {
+        return estimatedRemainingCost;
     }
 }
 
