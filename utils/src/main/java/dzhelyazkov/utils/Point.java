@@ -1,24 +1,16 @@
 package dzhelyazkov.utils;
 
-/**
- * Created by dzhel on 25.10.2017.
- */
+import java.util.Arrays;
+
 public class Point {
-    private final double x;
+    private final double[] coordinates;
 
-    private final double y;
-
-    public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public Point(double[] coordinates) {
+        this.coordinates = coordinates.clone();
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
+    public double[] getCoordinates() {
+        return coordinates;
     }
 
     @Override
@@ -30,17 +22,11 @@ public class Point {
 
         Point point = (Point) o;
 
-        return Double.compare(point.x, x) == 0 && Double.compare(point.y, y) == 0;
+        return Arrays.equals(coordinates, point.coordinates);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(x);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(y);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        return Arrays.hashCode(coordinates);
     }
 }

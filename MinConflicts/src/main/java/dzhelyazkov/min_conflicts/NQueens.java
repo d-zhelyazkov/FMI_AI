@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package min_conflicts;
+package dzhelyazkov.min_conflicts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +38,7 @@ public class NQueens {
         }
         
         queenCols = new Random().ints(N, 0, N).boxed().collect(Collectors.toList());
-        queensInConflict = new HashSet<Integer>(IntStream.range(0, N).boxed().collect(Collectors.toList()));
+        queensInConflict = new HashSet<>(IntStream.range(0, N).boxed().collect(Collectors.toList()));
         
         Collection<Integer> queensInConflict = getQueensInConflict();
         while(!queensInConflict.isEmpty()) {
@@ -124,7 +124,7 @@ public class NQueens {
         int col;
         Collection<Integer> queensInConflict;
 
-        public QueenTest(int col, Collection<Integer> queensInConflict) {
+        QueenTest(int col, Collection<Integer> queensInConflict) {
             this.col = col;
             this.queensInConflict = queensInConflict;
         }
