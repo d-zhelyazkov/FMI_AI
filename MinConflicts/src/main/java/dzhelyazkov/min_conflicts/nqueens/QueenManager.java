@@ -47,9 +47,7 @@ public class QueenManager implements Observer {
                 continue;
 
             if ((queenRow == row)
-//                    || (Math.abs(queenCol - col) == Math.abs(queen - i))) {
-                    || (row - col) == (queenRow - queenCol)
-                    || (row + col) == (queenRow + queenCol)) {
+                || (Math.abs(col - queenCol) == Math.abs(row - queenRow))) {
 
                 result.add(queen);
             }

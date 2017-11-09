@@ -47,7 +47,7 @@ public class Main {
                     candidates.add(testEntry);
                     break;
                 case -1:
-                    candidates = new ArrayList<>();
+                    candidates.clear();
                     candidates.add(testEntry);
                     break;
                 }
