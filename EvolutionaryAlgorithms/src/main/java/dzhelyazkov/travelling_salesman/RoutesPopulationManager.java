@@ -1,7 +1,7 @@
-package dzhelyazkov.evolutinary_algorithms.travelling_salesman;
+package dzhelyazkov.travelling_salesman;
 
-import dzhelyazkov.evolutinary_algorithms.api.Individual;
-import dzhelyazkov.evolutinary_algorithms.api.PopulationManager;
+import dzhelyazkov.evolutinary_algorithms.Individual;
+import dzhelyazkov.evolutinary_algorithms.PopulationManager;
 
 import java.util.ArrayList;
 import java.util.List;
