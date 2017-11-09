@@ -66,7 +66,7 @@ public class Queen extends Observable implements Observer {
         return mCell;
     }
 
-    void setCell(Point2D mCell) {
-        this.mCell = mCell;
+    void setCell(Point2D cell) {
+        mCell = cell;
     }
 }
