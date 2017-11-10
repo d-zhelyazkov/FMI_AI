@@ -1,6 +1,9 @@
-package dzhelyazkov.genetic_algorithms;
+package dzhelyazkov.genetic_algorithms.impl;
 
 import dzhelyazkov.evolutinary_algorithms.CrossoverOperator;
+import dzhelyazkov.genetic_algorithms.Chromosome;
+import dzhelyazkov.genetic_algorithms.ChromosomeBuilder;
+import dzhelyazkov.genetic_algorithms.Gene;
 
 import java.util.Arrays;
 import java.util.Collection;

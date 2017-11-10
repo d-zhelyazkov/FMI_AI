@@ -3,21 +3,28 @@ package dzhelyazkov.evolutinary_algorithms;
 import java.util.Comparator;
 import java.util.List;
 
-public class EvolutionaryAlgorithm<IndividualType extends Individual> {
+public class EvolutionaryAlgorithm<IndividualType extends Individual, FitnessType> {
 
-    private final Comparator<IndividualType> comparator;
+    private final Comparator<FitnessType> fitnessComparator;
 
     private final PopulationManager<IndividualType> populationManager;
 
-    public EvolutionaryAlgorithm(Comparator<IndividualType> comparator, PopulationManager<IndividualType> populationManager) {
-        this.comparator = comparator;
+    private final FitnessFunction<FitnessType, IndividualType> fitnessFunction;
+
+    public EvolutionaryAlgorithm(
+            FitnessFunction<FitnessType, IndividualType> fitnessFunction,
+            Comparator<FitnessType> fitnessComparator,
+            PopulationManager<IndividualType> populationManager) {
+
+        this.fitnessFunction = fitnessFunction;
+        this.fitnessComparator = fitnessComparator;
         this.populationManager = populationManager;
     }
 
     public void evolve(List<IndividualType> population, int generations) {
 
         for (int i = 0; (i < generations); i++) {
-            population.sort(comparator);
+            population.sort(new IndividualComparator());
 
             if (populationManager.isPopulationEvolvedEnough(population)) {
                 break;
@@ -30,6 +37,14 @@ public class EvolutionaryAlgorithm<IndividualType extends Individual> {
             population.addAll(offspring);
         }
 
+    }
+
+    class IndividualComparator implements Comparator<IndividualType> {
+
+        @Override
+        public int compare(IndividualType o1, IndividualType o2) {
+            return fitnessComparator.compare(fitnessFunction.getFitness(o1), fitnessFunction.getFitness(o2));
+        }
     }
 
 }
