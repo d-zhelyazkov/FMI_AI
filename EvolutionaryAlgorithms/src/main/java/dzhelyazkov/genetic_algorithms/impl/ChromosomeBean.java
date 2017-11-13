@@ -5,16 +5,33 @@ import dzhelyazkov.genetic_algorithms.Gene;
 
 import java.util.List;
 
-public class ChromosomeBean implements Chromosome {
+public class ChromosomeBean<GeneType extends Gene> implements Chromosome<GeneType> {
 
-    private final List<Gene> genes;
+    private final List<GeneType> genes;
 
-    public ChromosomeBean(List<Gene> genes) {
+    public ChromosomeBean(List<GeneType> genes) {
         this.genes = genes;
     }
 
     @Override
-    public List<Gene> getGenes() {
+    public List<GeneType> getGenes() {
         return genes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ChromosomeBean that = (ChromosomeBean) o;
+
+        return genes.equals(that.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return genes.hashCode();
     }
 }

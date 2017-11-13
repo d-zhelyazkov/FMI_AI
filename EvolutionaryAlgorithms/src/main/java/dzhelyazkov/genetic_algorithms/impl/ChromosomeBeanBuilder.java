@@ -5,18 +5,18 @@ import dzhelyazkov.genetic_algorithms.Gene;
 
 import java.util.List;
 
-public class ChromosomeBeanBuilder implements ChromosomeBuilder<ChromosomeBean> {
+public class ChromosomeBeanBuilder<GeneType extends Gene> implements ChromosomeBuilder<GeneType> {
 
-    private List<Gene> genes;
+    private List<GeneType> genes;
 
     @Override
-    public ChromosomeBuilder<ChromosomeBean> setGenes(List<Gene> genes) {
+    public ChromosomeBeanBuilder<GeneType> setGenes(List<GeneType> genes) {
         this.genes = genes;
         return this;
     }
 
     @Override
-    public ChromosomeBean build() {
-        return new ChromosomeBean(genes);
+    public ChromosomeBean<GeneType> build() {
+        return new ChromosomeBean<>(genes);
     }
 }

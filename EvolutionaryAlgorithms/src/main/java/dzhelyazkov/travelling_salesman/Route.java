@@ -1,17 +1,19 @@
 package dzhelyazkov.travelling_salesman;
 
-import dzhelyazkov.evolutinary_algorithms.Individual;
+import dzhelyazkov.genetic_algorithms.Chromosome;
 
 import java.util.List;
 
-public class Route implements Individual {
-    private int[] points;
+public class Route implements Chromosome<Node> {
 
-    public Route(List<Integer> resultPoints) {
+    private final List<Node> nodes;
 
+    public Route(List<Node> nodes) {
+        this.nodes = nodes;
     }
 
-    public List<Integer> getPoints() {
-        return points;
+    @Override
+    public List<Node> getGenes() {
+        return nodes;
     }
 }

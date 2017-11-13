@@ -26,14 +26,13 @@ class CycleCrossoverOperatorTest {
         List<Gene> parent1Genes = generateRandomPermutationChromosome(genesCount);
         List<Gene> parent2Genes = generateRandomPermutationChromosome(genesCount);
 
-        CrossoverOperator<ChromosomeBean> cycleCrossoverOperator = new CycleCrossoverOperator<>(
-                new ChromosomeBeanBuilder());
+        CrossoverOperator<Chromosome<Gene>> cycleCrossoverOperator = new CycleCrossoverOperator<>(new ChromosomeBeanBuilder<>());
 
-        Collection<ChromosomeBean> offspring = cycleCrossoverOperator.createOffspring(Arrays.asList(
-                new ChromosomeBean(parent1Genes),
-                new ChromosomeBean(parent2Genes)));
+        Collection<Chromosome<Gene>> offspring = cycleCrossoverOperator.createOffspring(Arrays.asList(
+                new ChromosomeBean<>(parent1Genes),
+                new ChromosomeBean<>(parent2Genes)));
 
-        Iterator<ChromosomeBean> children = offspring.iterator();
+        Iterator<Chromosome<Gene>> children = offspring.iterator();
         List<Gene> child1Genes = children.next().getGenes();
         List<Gene> child2Genes = children.next().getGenes();
 

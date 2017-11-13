@@ -8,11 +8,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class SwapMutationOperator implements MutationOperator<Chromosome> {
+/**
+ * Mutates a chromosome by swapping two of its genes.
+ */
+public class SwapMutationOperator<GeneType extends Gene> implements MutationOperator<Chromosome<GeneType>> {
 
     @Override
-    public void mutate(Chromosome individual) {
-        List<Gene> genes = individual.getGenes();
+    public void mutate(Chromosome<GeneType> individual) {
+        List<GeneType> genes = individual.getGenes();
 
         int[] indexes = new Random().ints(0, genes.size()).distinct().limit(2).toArray();
 

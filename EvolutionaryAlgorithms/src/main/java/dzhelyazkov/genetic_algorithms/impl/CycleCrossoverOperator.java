@@ -5,8 +5,10 @@ import dzhelyazkov.genetic_algorithms.Chromosome;
 import dzhelyazkov.genetic_algorithms.ChromosomeBuilder;
 import dzhelyazkov.genetic_algorithms.Gene;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,37 +22,37 @@ import java.util.stream.IntStream;
  * Works with chromosomes with permutation encoding.
  * Produces offspring of two new chromosomes
  */
-public class CycleCrossoverOperator<ChromosomeType extends Chromosome> implements CrossoverOperator<ChromosomeType> {
+public class CycleCrossoverOperator<GeneType extends Gene> implements CrossoverOperator<Chromosome<GeneType>> {
 
-    private final ChromosomeBuilder<ChromosomeType> chromosomeBuilder;
+    private final ChromosomeBuilder<GeneType> chromosomeBuilder;
 
-    public CycleCrossoverOperator(ChromosomeBuilder<ChromosomeType> chromosomeBuilder) {
+    public CycleCrossoverOperator(ChromosomeBuilder<GeneType> chromosomeBuilder) {
         this.chromosomeBuilder = chromosomeBuilder;
     }
 
     @Override
-    public Collection<ChromosomeType> createOffspring(Collection<ChromosomeType> parents) {
-        Iterator<ChromosomeType> parentsIt = parents.iterator();
-        List<Gene> parent1Genes = parentsIt.next().getGenes();
-        List<Gene> parent2Genes = parentsIt.next().getGenes();
+    public Collection<Chromosome<GeneType>> createOffspring(Collection<Chromosome<GeneType>> parents) {
+        Iterator<Chromosome<GeneType>> parentsIt = parents.iterator();
+        List<GeneType> parent1Genes = parentsIt.next().getGenes();
+        List<GeneType> parent2Genes = parentsIt.next().getGenes();
         int genesCount = parent1Genes.size();
 
-        Gene[] child1Genes = new Gene[genesCount];
-        Gene[] child2Genes = new Gene[genesCount];
+        List<GeneType> child1Genes = new ArrayList<>(Collections.nCopies(genesCount, null));
+        List<GeneType> child2Genes = new ArrayList<>(Collections.nCopies(genesCount, null));
 
         Set<Integer> indexes = new HashSet<>(
                 IntStream.range(0, genesCount).boxed().collect(Collectors.toList()));
-        Map<Gene, Integer> p1GeneIndexes = IntStream.range(0, genesCount).boxed()
+        Map<GeneType, Integer> p1GeneIndexes = IntStream.range(0, genesCount).boxed()
                 .collect(Collectors.toMap(parent1Genes::get, i -> i));
 
         boolean bit = false;
         while (!indexes.isEmpty()) {
             Integer index = indexes.iterator().next();
             while (indexes.contains(index)) {
-                Gene p1Gene = parent1Genes.get(index);
-                Gene p2Gene = parent2Genes.get(index);
-                child1Genes[index] = (bit) ? p1Gene : p2Gene;
-                child2Genes[index] = (bit) ? p2Gene : p1Gene;
+                GeneType p1Gene = parent1Genes.get(index);
+                GeneType p2Gene = parent2Genes.get(index);
+                child1Genes.set(index, (bit) ? p1Gene : p2Gene);
+                child2Genes.set(index, (bit) ? p2Gene : p1Gene);
 
                 indexes.remove(index);
                 index = p1GeneIndexes.get(p2Gene);
@@ -60,8 +62,8 @@ public class CycleCrossoverOperator<ChromosomeType extends Chromosome> implement
         }
 
         return Arrays.asList(
-                chromosomeBuilder.setGenes(Arrays.asList(child1Genes)).build(),
-                chromosomeBuilder.setGenes(Arrays.asList(child2Genes)).build()
+                this.chromosomeBuilder.setGenes(child1Genes).build(),
+                this.chromosomeBuilder.setGenes(child2Genes).build()
         );
     }
 }

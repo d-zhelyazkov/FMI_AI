@@ -2,8 +2,8 @@ package dzhelyazkov.genetic_algorithms;
 
 import java.util.List;
 
-public interface ChromosomeBuilder<ChromosomeType extends Chromosome> {
-    ChromosomeBuilder<ChromosomeType> setGenes(List<Gene> genes);
+public interface ChromosomeBuilder<GeneType extends Gene> {
+    ChromosomeBuilder<GeneType> setGenes(List<GeneType> genes);
 
-    ChromosomeType build();
+    Chromosome<GeneType> build();
 }

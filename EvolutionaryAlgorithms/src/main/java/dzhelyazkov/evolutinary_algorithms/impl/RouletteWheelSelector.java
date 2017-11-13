@@ -1,46 +1,47 @@
 package dzhelyazkov.evolutinary_algorithms.impl;
 
 import dzhelyazkov.evolutinary_algorithms.CrossoverSelector;
-import dzhelyazkov.evolutinary_algorithms.FitnessFunction;
 import dzhelyazkov.evolutinary_algorithms.Individual;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Performs Fitness proportionate selection over a population.
  * Individuals having higher fitness values have better chance to get selected.
  */
-public class RouletteWheelSelector<IndividualType extends Individual, FitnessType extends Number>
-        implements CrossoverSelector<IndividualType> {
+public class RouletteWheelSelector implements CrossoverSelector {
 
-    private final FitnessFunction<FitnessType, IndividualType> fitnessFunction;
+    private final Function<Individual, Number> fitnessFunction;
 
     private List<IndividualPortion> individualPortions;
 
     private double portionsSum;
 
-    public RouletteWheelSelector(
-            FitnessFunction<FitnessType, IndividualType> fitnessFunction) {
+    public RouletteWheelSelector(Function<Individual, Number> fitnessFunction) {
         this.fitnessFunction = fitnessFunction;
     }
 
     @Override
-    public void setPopulation(List<IndividualType> population) {
+    public void setPopulation(List<Individual> population) {
         individualPortions = new ArrayList<>(population.size() + 1);
-        individualPortions.add(new NullIndividualProportion());
         individualPortions.addAll(population.stream()
                 .map(individual ->
-                        new IndividualPortion(fitnessFunction.getFitness(individual).doubleValue(), individual))
+                        new IndividualPortion(fitnessFunction.apply(individual).doubleValue(), individual))
                 .collect(Collectors.toList()));
+        individualPortions.add(new NullIndividualProportion());
 
         Collections.sort(individualPortions);
 
         portionsSum = 0;
-        for (IndividualPortion individualPortions : this.individualPortions) {
+        ListIterator<IndividualPortion> iterator = individualPortions.listIterator(individualPortions.size());
+        while (iterator.hasPrevious()) {
+            IndividualPortion individualPortions = iterator.previous();
             portionsSum += individualPortions.portion;
             individualPortions.portion = portionsSum;
         }
@@ -48,23 +49,23 @@ public class RouletteWheelSelector<IndividualType extends Individual, FitnessTyp
     }
 
     @Override
-    public IndividualType select() {
+    public Individual select() {
         double randomPortion = new Random().nextDouble() * portionsSum;
 
         return binarySearch(randomPortion, 0, individualPortions.size() - 1);
     }
 
-    private IndividualType binarySearch(double portion, int leftIx, int rightIx) {
+    private Individual binarySearch(double portion, int leftIx, int rightIx) {
         if (leftIx + 1 == rightIx) {
-            return individualPortions.get(rightIx).individual;
+            return individualPortions.get(leftIx).individual;
         }
 
         int centerIx = (leftIx + rightIx) / 2;
         IndividualPortion centerIndividualPortion = this.individualPortions.get(centerIx);
         int comparisonResult = Double.compare(portion, centerIndividualPortion.portion);
-        if (comparisonResult < 0) {
+        if (comparisonResult > 0) {
             return binarySearch(portion, leftIx, centerIx);
-        } else if (comparisonResult > 0) {
+        } else if (comparisonResult < 0) {
             return binarySearch(portion, centerIx, rightIx);
         } else {
             return centerIndividualPortion.individual;
@@ -75,16 +76,16 @@ public class RouletteWheelSelector<IndividualType extends Individual, FitnessTyp
 
         double portion;
 
-        IndividualType individual;
+        Individual individual;
 
-        IndividualPortion(double portion, IndividualType individual) {
+        IndividualPortion(double portion, Individual individual) {
             this.portion = portion;
             this.individual = individual;
         }
 
         @Override
         public int compareTo(IndividualPortion o) {
-            return Double.compare(portion, o.portion);
+            return Double.compare(portion, o.portion) * -1;
         }
     }
 
