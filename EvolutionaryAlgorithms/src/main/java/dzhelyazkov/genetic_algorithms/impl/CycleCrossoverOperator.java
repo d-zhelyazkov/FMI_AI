@@ -22,17 +22,18 @@ import java.util.stream.IntStream;
  * Works with chromosomes with permutation encoding.
  * Produces offspring of two new chromosomes
  */
-public class CycleCrossoverOperator<GeneType extends Gene> implements CrossoverOperator<Chromosome<GeneType>> {
+public class CycleCrossoverOperator<GeneType extends Gene, ChromosomeType extends Chromosome<GeneType>>
+        implements CrossoverOperator<ChromosomeType> {
 
-    private final ChromosomeBuilder<GeneType> chromosomeBuilder;
+    private final ChromosomeBuilder<GeneType, ChromosomeType> chromosomeBuilder;
 
-    public CycleCrossoverOperator(ChromosomeBuilder<GeneType> chromosomeBuilder) {
+    public CycleCrossoverOperator(ChromosomeBuilder<GeneType, ChromosomeType> chromosomeBuilder) {
         this.chromosomeBuilder = chromosomeBuilder;
     }
 
     @Override
-    public Collection<Chromosome<GeneType>> createOffspring(Collection<Chromosome<GeneType>> parents) {
-        Iterator<Chromosome<GeneType>> parentsIt = parents.iterator();
+    public Collection<ChromosomeType> createOffspring(Collection<ChromosomeType> parents) {
+        Iterator<ChromosomeType> parentsIt = parents.iterator();
         List<GeneType> parent1Genes = parentsIt.next().getGenes();
         List<GeneType> parent2Genes = parentsIt.next().getGenes();
         int genesCount = parent1Genes.size();

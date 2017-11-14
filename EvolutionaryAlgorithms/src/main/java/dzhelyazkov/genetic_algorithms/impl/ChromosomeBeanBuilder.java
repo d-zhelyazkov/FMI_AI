@@ -5,7 +5,8 @@ import dzhelyazkov.genetic_algorithms.Gene;
 
 import java.util.List;
 
-public class ChromosomeBeanBuilder<GeneType extends Gene> implements ChromosomeBuilder<GeneType> {
+public class ChromosomeBeanBuilder<GeneType extends Gene>
+        implements ChromosomeBuilder<GeneType, ChromosomeBean<GeneType>> {
 
     private List<GeneType> genes;
 

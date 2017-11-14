@@ -8,12 +8,12 @@ public class Node implements Gene{
 
     private final Point2D position;
 
-    public Node(int id, Point2D position) {
+    Node(int id, Point2D position) {
         this.id = id;
         this.position = position;
     }
 
-    public Point2D getPosition() {
+    Point2D getPosition() {
         return position;
     }
 
@@ -31,6 +31,10 @@ public class Node implements Gene{
 
     @Override
     public int hashCode() {
+        return id;
+    }
+
+    int getID() {
         return id;
     }
 }

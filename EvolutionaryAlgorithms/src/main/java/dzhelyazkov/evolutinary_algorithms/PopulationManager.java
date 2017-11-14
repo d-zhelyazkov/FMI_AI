@@ -2,12 +2,13 @@ package dzhelyazkov.evolutinary_algorithms;
 
 import java.util.List;
 
-public interface PopulationManager {
-    List<Individual> createOffspring(List<Individual> population);
+public interface PopulationManager<IndividualType extends Individual> {
+    void sortPopulation(List<IndividualType> population);
 
-    boolean isPopulationEvolvedEnough(List<Individual> population);
+    boolean isPopulationEvolvedEnough(List<IndividualType> population);
 
-    void removeWorstIndividuals(List<Individual> population);
+    List<IndividualType> createOffspring(List<IndividualType> population);
 
-    void sortPopulation(List<Individual> population);
+    void removeWorstIndividuals(List<IndividualType> population);
+
 }

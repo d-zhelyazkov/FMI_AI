@@ -8,14 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class RoutesFitnessRegister implements Function<Route, Double> {
+public class RoutesFitnessRegister implements Function<Route, Number> {
 
     private final Map<Route, RouteEntry> routeEntries = new HashMap<>();
 
     private double maxPerimeter = 0;
 
-    void registerRoute(Route route) {
-        addRoute(route);
+    @Override
+    public Double apply(Route route) {
+        RouteEntry routeEntry = routeEntries.get(route);
+        if (routeEntry == null) {
+            routeEntry = addRoute(route);
+        }
+
+        return routeEntry.fitness;
     }
 
     private RouteEntry addRoute(Route route) {
@@ -28,16 +34,6 @@ public class RoutesFitnessRegister implements Function<Route, Double> {
         routeEntries.put(route, routeEntry);
 
         return routeEntry;
-    }
-
-    @Override
-    public Double apply(Route route) {
-        RouteEntry routeEntry = routeEntries.get(route);
-        if (routeEntry == null) {
-            routeEntry = addRoute(route);
-        }
-
-        return routeEntry.fitness;
     }
 
     private double calcPerimeter(Route route) {
@@ -60,6 +56,14 @@ public class RoutesFitnessRegister implements Function<Route, Double> {
         for (RouteEntry routeEntry : routeEntries.values()) {
             routeEntry.fitness = maxPerimeter - routeEntry.perimeter;
         }
+    }
+
+    public double getPerimeter(Route route) {
+        return routeEntries.get(route).perimeter;
+    }
+
+    public double getMaxPerimeter() {
+        return maxPerimeter;
     }
 
     class RouteEntry {

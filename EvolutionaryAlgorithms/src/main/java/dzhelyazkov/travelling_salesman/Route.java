@@ -8,7 +8,7 @@ public class Route implements Chromosome<Node> {
 
     private final List<Node> nodes;
 
-    public Route(List<Node> nodes) {
+    Route(List<Node> nodes) {
         this.nodes = nodes;
     }
 
