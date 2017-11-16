@@ -10,17 +10,19 @@ public class EvolutionaryAlgorithm<IndividualType extends Individual> {
         this.populationManager = populationManager;
     }
 
-    public void evolve(List<IndividualType> population, int generations) {
+    public int evolve(List<IndividualType> population, int generations) {
 
-        for (int i = 0; (i < generations); i++) {
+        int i = 0;
+        while (i < generations) {
+            evolve(population);
+            i++;
 
             if (populationManager.isPopulationEvolvedEnough(population)) {
                 break;
             }
-
-            evolve(population);
         }
 
+        return i;
     }
 
     public void evolve(List<IndividualType> population) {

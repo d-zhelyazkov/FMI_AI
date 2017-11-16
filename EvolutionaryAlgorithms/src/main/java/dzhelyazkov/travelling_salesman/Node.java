@@ -1,19 +1,19 @@
 package dzhelyazkov.travelling_salesman;
 
 import dzhelyazkov.genetic_algorithms.Gene;
-import dzhelyazkov.utils.Point2D;
+import dzhelyazkov.utils.Point;
 
 public class Node implements Gene{
     private final int id;
 
-    private final Point2D position;
+    private final Point position;
 
-    Node(int id, Point2D position) {
+    Node(int id, Point position) {
         this.id = id;
         this.position = position;
     }
 
-    Point2D getPosition() {
+    Point getPosition() {
         return position;
     }
 

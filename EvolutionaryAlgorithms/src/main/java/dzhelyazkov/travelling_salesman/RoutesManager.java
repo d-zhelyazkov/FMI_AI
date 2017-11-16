@@ -7,20 +7,22 @@ import dzhelyazkov.evolutinary_algorithms.PopulationManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RoutesManager implements PopulationManager<Route> {
 
+    static int EXCEPTIONS = 0;
+
     private final float replaceRatio;
 
     private final float mutateRatio;
 
-    private final Function<Route, Number> fitnessFunction;
+    private final RoutesFitnessRegister fitnessRegister;
 
     private final Comparator<Number> fitnessComparator;
 
@@ -32,7 +34,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     RoutesManager(
             float replaceRatio, float mutateRatio,
-            Function<Route, Number> fitnessFunction,
+            RoutesFitnessRegister fitnessRegister,
             Comparator<Number> fitnessComparator,
             CrossoverSelector<Route> crossoverSelector,
             CrossoverOperator<Route> crossoverOperator,
@@ -40,7 +42,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
         this.replaceRatio = replaceRatio;
         this.mutateRatio = mutateRatio;
-        this.fitnessFunction = fitnessFunction;
+        this.fitnessRegister = fitnessRegister;
         this.fitnessComparator = fitnessComparator;
         this.crossoverSelector = crossoverSelector;
         this.crossoverOperator = crossoverOperator;
@@ -50,7 +52,11 @@ public class RoutesManager implements PopulationManager<Route> {
     @Override
     public List<Route> createOffspring(List<Route> population) {
         int populationSize = population.size();
-        int offspringSize = (int) (populationSize * replaceRatio);
+        int offspringSize = getRenewSize(populationSize);
+        if(offspringSize == 0) {
+            return Collections.emptyList();
+        }
+
         List<Route> offspring = new ArrayList<>(offspringSize);
 
         crossoverSelector.setPopulation(population);
@@ -74,17 +80,43 @@ public class RoutesManager implements PopulationManager<Route> {
     @Override
     public void removeWorstIndividuals(List<Route> population) {
         int populationSize = population.size();
-        int individualsToRemove = (int) (populationSize * replaceRatio);
-        population.subList(populationSize - individualsToRemove, populationSize).clear();
+        List<Route> routesForRemoval = population.subList(populationSize - getRenewSize(populationSize), populationSize);
+        for (Route route : routesForRemoval) {
+            fitnessRegister.remove(route);
+        }
+
+        routesForRemoval.clear();
     }
 
     @Override
     public void sortPopulation(List<Route> population) {
-        population.sort((o1, o2) -> fitnessComparator.compare(fitnessFunction.apply(o1), fitnessFunction.apply(o2)));
+        try {
+            population
+                    .sort((o1, o2) -> fitnessComparator.compare(fitnessRegister.apply(o1), fitnessRegister.apply(o2)));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            //TODO fixme
+            EXCEPTIONS ++;
+        }
     }
 
     @Override
     public boolean isPopulationEvolvedEnough(List<Route> population) {
-        return false;
+        int lastUnchangedRouteIx = getLastUnchangedIX(population);
+        return population.get(0).equals(population.get(lastUnchangedRouteIx));
     }
+
+    RoutesFitnessRegister getFitnessRegister() {
+        return fitnessRegister;
+    }
+
+    int getLastUnchangedIX(List<Route> population) {
+        int size = population.size();
+        return  ((getRenewSize(size) - 1) + size) % size;
+    }
+
+    private int getRenewSize(int populationSize) {
+        return (int) (populationSize * replaceRatio);
+    }
+
 }

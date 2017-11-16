@@ -58,12 +58,16 @@ public class RoutesFitnessRegister implements Function<Route, Number> {
         }
     }
 
-    public double getPerimeter(Route route) {
+    double getPerimeter(Route route) {
         return routeEntries.get(route).perimeter;
     }
 
     public double getMaxPerimeter() {
         return maxPerimeter;
+    }
+
+    void remove(Route route) {
+        routeEntries.remove(route);
     }
 
     class RouteEntry {
