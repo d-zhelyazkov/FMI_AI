@@ -18,7 +18,7 @@ class RouletteWheelSelectorTest {
     private static final Function<Integer, Integer> SELECTIONS_FUNC = (integer -> (int) Math.pow(integer, 4));
 
     @ParameterizedTest
-    @ValueSource(ints = { 10, 20, 50 })
+    @ValueSource(ints = { 10, 20, 50, 100 })
     void test(int individuals) {
         int selectionsCount = SELECTIONS_FUNC.apply(individuals);
         System.out.printf("Individuals: %d, Selections: %d\n", individuals, selectionsCount);

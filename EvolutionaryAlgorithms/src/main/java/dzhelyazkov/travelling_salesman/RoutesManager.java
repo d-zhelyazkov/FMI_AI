@@ -25,7 +25,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     private final RoutesFitnessRegister fitnessRegister;
 
-    private final Comparator<Number> fitnessComparator;
+    private final Comparator<Route> routeComparator;
 
     private final CrossoverSelector<Route> crossoverSelector;
 
@@ -44,10 +44,12 @@ public class RoutesManager implements PopulationManager<Route> {
         this.replaceRatio = replaceRatio;
         this.mutateRatio = mutateRatio;
         this.fitnessRegister = fitnessRegister;
-        this.fitnessComparator = fitnessComparator;
         this.crossoverSelector = crossoverSelector;
         this.crossoverOperator = crossoverOperator;
         this.mutationOperator = mutationOperator;
+
+        this.routeComparator =
+                (r1, r2) -> fitnessComparator.compare(fitnessRegister.apply(r1), fitnessRegister.apply(r2));
     }
 
     @Override
@@ -92,8 +94,7 @@ public class RoutesManager implements PopulationManager<Route> {
     @Override
     public void sortPopulation(List<Route> population) {
         try {
-            population
-                    .sort((o1, o2) -> fitnessComparator.compare(fitnessRegister.apply(o1), fitnessRegister.apply(o2)));
+            population.sort(routeComparator);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             //TODO fixme

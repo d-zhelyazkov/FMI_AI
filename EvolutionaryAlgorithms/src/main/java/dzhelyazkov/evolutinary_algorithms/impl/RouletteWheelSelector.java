@@ -2,6 +2,7 @@ package dzhelyazkov.evolutinary_algorithms.impl;
 
 import dzhelyazkov.evolutinary_algorithms.CrossoverSelector;
 import dzhelyazkov.evolutinary_algorithms.Individual;
+import dzhelyazkov.utils.Double;
 
 import java.util.ArrayList;
 import java.util.Collections;

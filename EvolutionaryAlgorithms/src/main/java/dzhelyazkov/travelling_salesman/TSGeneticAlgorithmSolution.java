@@ -52,7 +52,7 @@ class TSGeneticAlgorithmSolution {
         routesManager = new RoutesManager(
                 renewRatio, mutateRatio,
                 routesRegister,
-                (o1, o2) -> Double.compare(o2.doubleValue(), o1.doubleValue()),
+                (f1, f2) -> Double.compare(f2.doubleValue(), f1.doubleValue()),
                 new RouletteWheelSelector<>(routesRegister),
                 new CycleCrossoverOperator<>(new RouteBuilder()),
                 new SwapMutationOperator((int) (nodes.size() * mutateRatio))
