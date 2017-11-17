@@ -1,6 +1,5 @@
 package dzhelyazkov.travelling_salesman;
 
-import dzhelyazkov.utils.Double;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -23,7 +22,7 @@ class TSGeneticAlgorithmSolutionTest {
         solution.execute();
 
         double bestPerimeter = solution.getBestPerimeter();
-        Assertions.assertEquals(0, Double.compare(goalP, bestPerimeter),
+        Assertions.assertTrue(solution.isGoalAchieved(),
                 String.format("Expected %f, but got %f", goalP, bestPerimeter));
     }
 

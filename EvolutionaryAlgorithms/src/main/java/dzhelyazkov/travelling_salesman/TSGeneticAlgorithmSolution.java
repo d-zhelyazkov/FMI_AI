@@ -34,6 +34,8 @@ class TSGeneticAlgorithmSolution {
 
     private double goalPerimeter = 0;
 
+    private boolean localMinimum = false;
+
     TSGeneticAlgorithmSolution(List<Node> nodes, double goalP) {
         this(RENEW_RATIO, MUTATE_RATIO, nodes, goalP);
     }
@@ -64,6 +66,8 @@ class TSGeneticAlgorithmSolution {
     }
 
     void execute(int generations) {
+        localMinimum = false;
+
         EvolutionaryAlgorithm<Route> evolutionaryAlgorithm = new EvolutionaryAlgorithm<>(routesManager);
 
         evolutionaryAlgorithm.evolve(population);
@@ -79,7 +83,7 @@ class TSGeneticAlgorithmSolution {
                 printPopulationStatistics();
             }
 
-            if (Double.compare(getBestPerimeter(), goalPerimeter) != 1) {
+            if (isGoalAchieved()) {
                 System.out.println("Goal accomplished!.");
                 break;
             }
@@ -87,6 +91,7 @@ class TSGeneticAlgorithmSolution {
             if ((i % GEN_CHECK) == 0) {
                 PopulationSnapshot newSnapshot = new PopulationSnapshot();
                 if (newSnapshot.equals(snapshot)) {
+                    localMinimum = true;
                     System.out.println("Execution terminated. No change in population");
                     break;
                 }
@@ -125,6 +130,14 @@ class TSGeneticAlgorithmSolution {
 
     int getGenerations() {
         return generations;
+    }
+
+    boolean isInLocalMinimum() {
+        return localMinimum;
+    }
+
+    boolean isGoalAchieved() {
+        return (Double.compare(getBestPerimeter(), goalPerimeter) != 1);
     }
 
     private class PopulationSnapshot {

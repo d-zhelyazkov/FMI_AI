@@ -19,7 +19,7 @@ class CycleCrossoverOperatorTest {
 
     private static final int GENES_MAX_COUNT = 100000;
 
-    @RepeatedTest(200)
+    @RepeatedTest(100)
     void createOffspring() throws Exception {
         int genesCount = new Random().nextInt(GENES_MAX_COUNT) + 1;
 

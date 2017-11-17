@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 
 class BestParamsFinder {
 
-    private static final int REPEATS = 10;
+    private static final int RETRIES = 10;
 
-    private static final int BEST_STATISTICS = 10;
+    private static final int BEST_STATISTICS = 20;
 
     @ParameterizedTest
     @ValueSource(ints = { 10, 20, 50, 100 })
@@ -32,13 +32,18 @@ class BestParamsFinder {
             for (float mutateRatio = 0.0f; mutateRatio <= 1f; mutateRatio += 0.2) {
 
                 System.out.printf("\n\nTest with: renew ratio: %.1f, mutate ratio: %.1f\n\n", renewRatio, mutateRatio);
-                List<Statistic> statisticsPerTry = new ArrayList<>(REPEATS);
-                for (int i = 0; i < REPEATS; i++) {
+                List<Statistic> statisticsPerTry = new ArrayList<>(RETRIES);
+                for (int i = 0; i < RETRIES; i++) {
                     TSGeneticAlgorithmSolution solution =
                             new TSGeneticAlgorithmSolution(renewRatio, mutateRatio, nodes, goalP);
                     solution.execute();
                     statisticsPerTry.add(new Statistic(
                             renewRatio, mutateRatio, solution.getBestPerimeter(), solution.getGenerations()));
+
+                    if (solution.isInLocalMinimum()) {
+                        System.out.println("Local minimum achieved.");
+                        break;
+                    }
                 }
                 Statistic statistic = getAverageStatistic(statisticsPerTry);
                 System.out.println(statistic);
