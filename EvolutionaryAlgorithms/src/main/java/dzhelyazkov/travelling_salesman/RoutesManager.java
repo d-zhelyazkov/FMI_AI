@@ -102,8 +102,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     @Override
     public boolean isPopulationEvolvedEnough(List<Route> population) {
-        int lastUnchangedRouteIx = getLastUnchangedIX(population);
-        return population.get(0).equals(population.get(lastUnchangedRouteIx));
+        return false;
     }
 
     RoutesFitnessRegister getFitnessRegister() {
@@ -112,7 +111,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     int getLastUnchangedIX(List<Route> population) {
         int size = population.size();
-        return  ((getRenewSize(size) - 1) + size) % size;
+        return size - getRenewSize(size) - 1;
     }
 
     private int getRenewSize(int populationSize) {

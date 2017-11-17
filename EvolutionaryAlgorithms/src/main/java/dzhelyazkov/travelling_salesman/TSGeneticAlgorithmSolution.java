@@ -13,13 +13,18 @@ import java.util.stream.Stream;
 
 class TSGeneticAlgorithmSolution {
 
-    static int EXCEPTIONS = 0;
-
     private static final int GEN_PRINT = 1000;
 
-    private static final int GEN_EQUAL_P = 10000;
+    private static final int GEN_CHECK = 10000;
 
     private static final int POPULATION_SIZE = 100;
+
+    private static final int GENERATIONS = Integer.MAX_VALUE;
+
+    private static final float RENEW_RATIO = 0.8f;
+
+    private static final float MUTATE_RATIO = 0.2f;
+
 
     private final RoutesManager routesManager;
 
@@ -28,6 +33,10 @@ class TSGeneticAlgorithmSolution {
     private int generations = 0;
 
     private double goalPerimeter = 0;
+
+    TSGeneticAlgorithmSolution(List<Node> nodes, double goalP) {
+        this(RENEW_RATIO, MUTATE_RATIO, nodes, goalP);
+    }
 
     TSGeneticAlgorithmSolution(float renewRatio, float mutateRatio, List<Node> nodes, double goalPerimeter) {
         this(renewRatio, mutateRatio, nodes);
@@ -50,26 +59,39 @@ class TSGeneticAlgorithmSolution {
         );
     }
 
+    void execute() {
+        execute(GENERATIONS);
+    }
+
     void execute(int generations) {
         EvolutionaryAlgorithm<Route> evolutionaryAlgorithm = new EvolutionaryAlgorithm<>(routesManager);
 
-        int gensWithEqualPs = 0;
+        evolutionaryAlgorithm.evolve(population);
+        this.generations++;
+
+        PopulationSnapshot snapshot = new PopulationSnapshot();
 
         for (int i = 0; i < generations; i++) {
             evolutionaryAlgorithm.evolve(population);
             this.generations++;
 
-            if ((this.generations % GEN_PRINT) == 0) {
+            if ((i % GEN_PRINT) == 0) {
                 printPopulationStatistics();
             }
 
-            gensWithEqualPs = (Double.compare(getBestPerimeter(), getWorstPerimeter()) == 0) ? gensWithEqualPs + 1 : 0;
-
-            if (routesManager.isPopulationEvolvedEnough(population)
-                    || (Double.compare(getBestPerimeter(), goalPerimeter) != 1)
-                    || (Double.compare(gensWithEqualPs, GEN_EQUAL_P) == 0)) {
-                System.out.println("Execution terminated.");
+            if (Double.compare(getBestPerimeter(), goalPerimeter) != 1) {
+                System.out.println("Goal accomplished!.");
                 break;
+            }
+
+            if ((i % GEN_CHECK) == 0) {
+                PopulationSnapshot newSnapshot = new PopulationSnapshot();
+                if (newSnapshot.equals(snapshot)) {
+                    System.out.println("Execution terminated. No change in population");
+                    break;
+                }
+
+                snapshot = newSnapshot;
             }
         }
 
@@ -81,14 +103,7 @@ class TSGeneticAlgorithmSolution {
 
         RoutesFitnessRegister fitnessRegister = routesManager.getFitnessRegister();
         int lastUnchangedRouteIX = routesManager.getLastUnchangedIX(population);
-        try {
-            return fitnessRegister.getPerimeter(population.get(lastUnchangedRouteIX));
-        } catch (NullPointerException e) {
-            //TODO fixme
-            e.printStackTrace();
-            EXCEPTIONS++;
-            return java.lang.Double.MAX_VALUE;
-        }
+        return fitnessRegister.getPerimeter(population.get(lastUnchangedRouteIX));
     }
 
     double getBestPerimeter() {
@@ -110,5 +125,24 @@ class TSGeneticAlgorithmSolution {
 
     int getGenerations() {
         return generations;
+    }
+
+    private class PopulationSnapshot {
+        final double bestPerimeter = getBestPerimeter();
+
+        final double worstPerimeter = getWorstPerimeter();
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+
+            PopulationSnapshot that = (PopulationSnapshot) o;
+
+            return (Double.compare(that.bestPerimeter, bestPerimeter) == 0)
+                    && (Double.compare(that.worstPerimeter, worstPerimeter) == 0);
+        }
     }
 }

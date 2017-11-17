@@ -20,25 +20,23 @@ class BestParamsFinder {
 
     private static final int BEST_STATISTICS = 10;
 
-    private static final int GENERATIONS = 1000000;
-
     @ParameterizedTest
     @ValueSource(ints = { 10, 20, 50, 100 })
     void findParams(int nodesCount) {
-        double goalP = (nodesCount - 1) * 2 * Math.sqrt(2);
+        double goalP = NodesInLineSupplier.getGoalPerimeter(nodesCount);
         System.out.printf("FINDING PARAMS FOR %d NODES.\nGoal perimeter: %f\n\n", nodesCount, goalP);
         List<Node> nodes = Stream.generate(new NodesInLineSupplier()).limit(nodesCount).collect(Collectors.toList());
 
         List<Statistic> statistics = new ArrayList<>(100);
-        for (float renewRatio = 0.1f; renewRatio <= 0.5f; renewRatio += 0.1) {
-            for (float mutateRatio = 0.1f; mutateRatio <= 0.5f; mutateRatio += 0.1) {
+        for (float renewRatio = 0.1f; renewRatio <= 1f; renewRatio += 0.2) {
+            for (float mutateRatio = 0.0f; mutateRatio <= 1f; mutateRatio += 0.2) {
 
                 System.out.printf("\n\nTest with: renew ratio: %.1f, mutate ratio: %.1f\n\n", renewRatio, mutateRatio);
                 List<Statistic> statisticsPerTry = new ArrayList<>(REPEATS);
                 for (int i = 0; i < REPEATS; i++) {
                     TSGeneticAlgorithmSolution solution =
                             new TSGeneticAlgorithmSolution(renewRatio, mutateRatio, nodes, goalP);
-                    solution.execute(GENERATIONS);
+                    solution.execute();
                     statisticsPerTry.add(new Statistic(
                             renewRatio, mutateRatio, solution.getBestPerimeter(), solution.getGenerations()));
                 }
@@ -56,16 +54,14 @@ class BestParamsFinder {
     @BeforeEach
     void beforeEach() {
         RoutesManager.EXCEPTIONS = 0;
-        TSGeneticAlgorithmSolution.EXCEPTIONS = 0;
     }
 
     @AfterEach
     void afterAll() {
 
-        if (RoutesManager.EXCEPTIONS != 0
-                || TSGeneticAlgorithmSolution.EXCEPTIONS != 0) {
-            String err = String.format("\nRoutesManager.EXCEPTIONS: %d\nTSGeneticAlgorithmSolution.EXCEPTIONS: %d\n",
-                    RoutesManager.EXCEPTIONS, TSGeneticAlgorithmSolution.EXCEPTIONS);
+        if (RoutesManager.EXCEPTIONS != 0) {
+            String err = String.format("\nRoutesManager.EXCEPTIONS: %d\n",
+                    RoutesManager.EXCEPTIONS);
             throw new RuntimeException(err);
         }
     }

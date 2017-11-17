@@ -14,4 +14,8 @@ public class NodesInLineSupplier implements Supplier<Node> {
         nodeID++;
         return node;
     }
+
+    static double getGoalPerimeter(int nodesCount) {
+        return (nodesCount - 1) * 2 * Math.sqrt(2);
+    }
 }
