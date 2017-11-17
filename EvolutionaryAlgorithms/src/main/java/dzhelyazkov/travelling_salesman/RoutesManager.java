@@ -4,6 +4,7 @@ import dzhelyazkov.evolutinary_algorithms.CrossoverOperator;
 import dzhelyazkov.evolutinary_algorithms.CrossoverSelector;
 import dzhelyazkov.evolutinary_algorithms.MutationOperator;
 import dzhelyazkov.evolutinary_algorithms.PopulationManager;
+import dzhelyazkov.genetic_algorithms.Chromosome;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +31,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     private final CrossoverOperator<Route> crossoverOperator;
 
-    private final MutationOperator<Route> mutationOperator;
+    private final MutationOperator<Chromosome> mutationOperator;
 
     RoutesManager(
             float replaceRatio, float mutateRatio,
@@ -38,7 +39,7 @@ public class RoutesManager implements PopulationManager<Route> {
             Comparator<Number> fitnessComparator,
             CrossoverSelector<Route> crossoverSelector,
             CrossoverOperator<Route> crossoverOperator,
-            MutationOperator<Route> mutationOperator) {
+            MutationOperator<Chromosome> mutationOperator) {
 
         this.replaceRatio = replaceRatio;
         this.mutateRatio = mutateRatio;

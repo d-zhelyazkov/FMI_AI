@@ -55,7 +55,7 @@ class TSGeneticAlgorithmSolution {
                 (o1, o2) -> Double.compare(o2.doubleValue(), o1.doubleValue()),
                 new RouletteWheelSelector<>(routesRegister),
                 new CycleCrossoverOperator<>(new RouteBuilder()),
-                new SwapMutationOperator<>((int) (nodes.size() * mutateRatio))
+                new SwapMutationOperator((int) (nodes.size() * mutateRatio))
         );
     }
 

@@ -10,8 +10,9 @@ import java.util.Random;
 /**
  * Mutates a chromosome by swapping two of its genes.
  */
-public class SwapMutationOperator<ChromosomeType extends Chromosome>
-        implements MutationOperator<ChromosomeType> {
+public class SwapMutationOperator implements MutationOperator<Chromosome> {
+
+    private static final int SWAPS = 1;
 
     private final int swaps;
 
@@ -20,11 +21,11 @@ public class SwapMutationOperator<ChromosomeType extends Chromosome>
     }
 
     public SwapMutationOperator() {
-        swaps = 0;
+        this(SWAPS);
     }
 
     @Override
-    public void mutate(ChromosomeType individual) {
+    public void mutate(Chromosome individual) {
         List genes = individual.getGenes();
         Random random = new Random();
         for (int i = 0; i < swaps; i++) {
