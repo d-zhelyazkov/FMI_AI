@@ -16,9 +16,13 @@ import java.util.stream.Stream;
 
 class BestParamsFinder {
 
-    private static final int RETRIES = 10;
+    private static final int RETRIES = 5;
 
-    private static final int BEST_STATISTICS = 20;
+    private static final int BEST_STATISTICS = 10;
+
+    private static final float[] renewRatios = { 0.5f, 0.70f, 0.90f };
+
+    private static final float[] mutateRatios = { 0.5f, 0.70f, 0.90f };
 
     @ParameterizedTest
     @ValueSource(ints = { 10, 20, 50, 100 })
@@ -28,10 +32,10 @@ class BestParamsFinder {
         List<Node> nodes = Stream.generate(new NodesInLineSupplier()).limit(nodesCount).collect(Collectors.toList());
 
         List<Statistic> statistics = new ArrayList<>(100);
-        for (float renewRatio = 0.1f; renewRatio <= 1f; renewRatio += 0.2) {
-            for (float mutateRatio = 0.0f; mutateRatio <= 1f; mutateRatio += 0.2) {
+        for (float renewRatio : renewRatios) {
+            for (float mutateRatio : mutateRatios) {
 
-                System.out.printf("\n\nTest with: renew ratio: %.1f, mutate ratio: %.1f\n\n", renewRatio, mutateRatio);
+                System.out.printf("\n\nTest with: renew ratio: %.2f, mutate ratio: %.2f\n\n", renewRatio, mutateRatio);
                 List<Statistic> statisticsPerTry = new ArrayList<>(RETRIES);
                 for (int i = 0; i < RETRIES; i++) {
                     TSGeneticAlgorithmSolution solution =
@@ -40,10 +44,10 @@ class BestParamsFinder {
                     statisticsPerTry.add(new Statistic(
                             renewRatio, mutateRatio, solution.getBestPerimeter(), solution.getGenerations()));
 
-                    if (solution.isInLocalMinimum()) {
-                        System.out.println("Local minimum achieved.");
-                        break;
-                    }
+//                    if (solution.isInLocalMinimum()) {
+//                        System.out.println("Local minimum achieved.");
+//                        break;
+//                    }
                 }
                 Statistic statistic = getAverageStatistic(statisticsPerTry);
                 System.out.println(statistic);
@@ -130,7 +134,7 @@ class BestParamsFinder {
         @Override
         public String toString() {
             return String.format(
-                    "Statistic{ renew = %.1f, mutate = %.1f, perim = %f, generations = %d}",
+                    "Statistic{ renew = %.2f, mutate = %.2f, perim = %f, generations = %d}",
                     renewRatio, mutateRatio, perimeter, generations);
         }
     }

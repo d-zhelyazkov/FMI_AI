@@ -48,7 +48,7 @@ public class CycleCrossoverOperator<GeneType extends Gene, ChromosomeType extend
 
         boolean bit = false;
         while (!indexes.isEmpty()) {
-            Integer index = indexes.iterator().next();
+            Integer index = dzhelyazkov.utils.Collections.getRandomElement(indexes);
             while (indexes.contains(index)) {
                 GeneType p1Gene = parent1Genes.get(index);
                 GeneType p2Gene = parent2Genes.get(index);

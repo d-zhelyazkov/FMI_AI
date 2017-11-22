@@ -15,7 +15,7 @@ class TSGeneticAlgorithmSolution {
 
     private static final int GEN_PRINT = 1000;
 
-    private static final int GEN_CHECK = 10000;
+    private static final int GEN_CHECK = 100000;
 
     private static final int POPULATION_SIZE = 100;
 
@@ -23,7 +23,7 @@ class TSGeneticAlgorithmSolution {
 
     private static final float RENEW_RATIO = 0.8f;
 
-    private static final float MUTATE_RATIO = 0.2f;
+    private static final float MUTATE_RATIO = 0.6f;
 
 
     private final RoutesManager routesManager;
@@ -75,7 +75,7 @@ class TSGeneticAlgorithmSolution {
 
         PopulationSnapshot snapshot = new PopulationSnapshot();
 
-        for (int i = 0; i < generations; i++) {
+        for (int i = 1; i < generations; i++) {
             evolutionaryAlgorithm.evolve(population);
             this.generations++;
 
@@ -92,7 +92,7 @@ class TSGeneticAlgorithmSolution {
                 PopulationSnapshot newSnapshot = new PopulationSnapshot();
                 if (newSnapshot.equals(snapshot)) {
                     localMinimum = true;
-                    System.out.println("Execution terminated. No change in population");
+                    System.out.println("Execution terminated -> Local minimum.");
                     break;
                 }
 

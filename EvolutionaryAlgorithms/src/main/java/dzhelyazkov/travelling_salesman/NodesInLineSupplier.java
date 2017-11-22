@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 public class NodesInLineSupplier implements Supplier<Node> {
 
-    private static int nodeID = 0;
+    private int nodeID = 0;
 
     @Override
     public Node get() {

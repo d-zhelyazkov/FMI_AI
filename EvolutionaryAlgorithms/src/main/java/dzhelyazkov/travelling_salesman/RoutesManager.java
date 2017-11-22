@@ -7,7 +7,6 @@ import dzhelyazkov.evolutinary_algorithms.PopulationManager;
 import dzhelyazkov.genetic_algorithms.Chromosome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -61,13 +60,11 @@ public class RoutesManager implements PopulationManager<Route> {
         }
 
         List<Route> offspring = new ArrayList<>(offspringSize);
-
         crossoverSelector.setPopulation(population);
-        while (offspring.size() < offspringSize) {
-            List<Route> parents = Stream.generate(crossoverSelector).distinct().limit(2).collect(Collectors.toList());
-            Collection<Route> localOffspring = crossoverOperator.createOffspring(parents);
-            offspring.addAll(localOffspring);
-        }
+        //create (offspringSize / 2) different pairs of parents and cross them
+        Stream.generate(() -> Stream.generate(crossoverSelector).distinct().limit(2).collect(Collectors.toSet()))
+                .distinct().limit(offspringSize / 2)
+                .forEach(routes -> offspring.addAll(crossoverOperator.createOffspring(routes)));
         offspringSize = offspring.size();
 
         int mutatedRoutesCount = (int) (offspringSize * mutateRatio);
@@ -83,7 +80,8 @@ public class RoutesManager implements PopulationManager<Route> {
     @Override
     public void removeWorstIndividuals(List<Route> population) {
         int populationSize = population.size();
-        List<Route> routesForRemoval = population.subList(populationSize - getRenewSize(populationSize), populationSize);
+        List<Route> routesForRemoval =
+                population.subList(populationSize - getRenewSize(populationSize), populationSize);
         for (Route route : routesForRemoval) {
             fitnessRegister.remove(route);
         }
@@ -113,7 +111,7 @@ public class RoutesManager implements PopulationManager<Route> {
 
     int getLastUnchangedIX(List<Route> population) {
         int size = population.size();
-        return size - getRenewSize(size) - 1;
+        return (int) (size * (1 - replaceRatio)) - 1;
     }
 
     private int getRenewSize(int populationSize) {
