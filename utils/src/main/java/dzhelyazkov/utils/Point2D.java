@@ -13,4 +13,9 @@ public class Point2D extends Point {
     public double getY() {
         return getCoordinates()[1];
     }
+
+    @Override
+    public String toString() {
+        return String.format("{x: %f, y: %f}", getX(), getY());
+    }
 }
