@@ -6,16 +6,17 @@ import dzhelyazkov.genetic_algorithms.impl.CycleCrossoverOperator;
 import dzhelyazkov.genetic_algorithms.impl.SwapMutationOperator;
 import dzhelyazkov.utils.Double;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class TSGeneticAlgorithmSolution {
 
+    public static final int MIN_NODES_COUNT = 7;
+
     private static final int GEN_PRINT = 100;
 
-    private static final int GEN_CHECK = 10000;
+    private static final int GEN_LOCEXTR_CHECK = 10000;
 
     private static final int POPULATION_SIZE = 100;
 
@@ -25,16 +26,15 @@ class TSGeneticAlgorithmSolution {
 
     private static final float MUTATE_RATIO = 0.50f;
 
-
     private final RoutesManager routesManager;
 
     private final List<Route> population;
 
-    private int generations = 0;
-
     private double goalPerimeter = 0;
 
-    private boolean localMinimum = false;
+    private int generations = 0;
+
+    private boolean localExtreme = false;
 
     TSGeneticAlgorithmSolution(List<Node> nodes, double goalP) {
         this(RENEW_RATIO, MUTATE_RATIO, nodes, goalP);
@@ -47,6 +47,7 @@ class TSGeneticAlgorithmSolution {
     }
 
     TSGeneticAlgorithmSolution(float renewRatio, float mutateRatio, List<Node> nodes) {
+        int nodesCount = nodes.size();
         population = Stream.generate(new RandomRouteSupplier(nodes)).distinct().limit(POPULATION_SIZE)
                 .collect(Collectors.toList());
 
@@ -57,7 +58,7 @@ class TSGeneticAlgorithmSolution {
                 (f1, f2) -> Double.compare(f2.doubleValue(), f1.doubleValue()),
                 new RouletteWheelSelector<>(routesRegister),
                 new CycleCrossoverOperator<>(new RouteBuilder()),
-                new SwapMutationOperator((int) (nodes.size() * mutateRatio))
+                new SwapMutationOperator((int) (nodesCount * mutateRatio))
         );
     }
 
@@ -66,7 +67,7 @@ class TSGeneticAlgorithmSolution {
     }
 
     void execute(int generations) {
-        localMinimum = false;
+        localExtreme = false;
 
         EvolutionaryAlgorithm<Route> evolutionaryAlgorithm = new EvolutionaryAlgorithm<>(routesManager);
 
@@ -88,11 +89,11 @@ class TSGeneticAlgorithmSolution {
                 break;
             }
 
-            if ((i % GEN_CHECK) == 0) {
+            if ((i % GEN_LOCEXTR_CHECK) == 0) {
                 PopulationSnapshot newSnapshot = new PopulationSnapshot();
                 if (newSnapshot.equals(snapshot)) {
-                    localMinimum = true;
-                    System.out.println("Execution terminated -> Local minimum.");
+                    localExtreme = true;
+                    System.out.println("Execution terminated -> Local extreme.");
                     break;
                 }
 
@@ -119,9 +120,8 @@ class TSGeneticAlgorithmSolution {
 
     private void printBestRoute() {
         double perimeter = getBestPerimeter();
-        Object[] nodeIDs = population.get(0).getGenes().stream().map(Node::getID).toArray();
         System.out.printf("GEN: %d: Best route [Perimeter : %f, Route: %s]\n"
-                , generations, perimeter, Arrays.toString(nodeIDs));
+                , generations, perimeter, population.get(0));
     }
 
     private void printPopulationStatistics() {
@@ -132,8 +132,8 @@ class TSGeneticAlgorithmSolution {
         return generations;
     }
 
-    boolean isInLocalMinimum() {
-        return localMinimum;
+    boolean isInLocalExtreme() {
+        return localExtreme;
     }
 
     boolean isGoalAchieved() {
@@ -154,8 +154,8 @@ class TSGeneticAlgorithmSolution {
 
             PopulationSnapshot that = (PopulationSnapshot) o;
 
-            return (Double.compare(that.bestPerimeter, bestPerimeter) == 0)
-                    && (Double.compare(that.worstPerimeter, worstPerimeter) == 0);
+            return Double.equal(that.bestPerimeter, bestPerimeter)
+                    && Double.equal(that.worstPerimeter, worstPerimeter);
         }
     }
 }

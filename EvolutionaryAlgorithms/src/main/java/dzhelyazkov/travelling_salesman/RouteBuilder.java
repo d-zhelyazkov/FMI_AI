@@ -2,10 +2,7 @@ package dzhelyazkov.travelling_salesman;
 
 import dzhelyazkov.genetic_algorithms.ChromosomeBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class RouteBuilder implements ChromosomeBuilder<Node, Route> {
@@ -24,7 +21,7 @@ public class RouteBuilder implements ChromosomeBuilder<Node, Route> {
     }
 
     /**
-     * Sets the node with the smallest ID as a starting node
+     * Rearange the chromosome in order to set the node with the smallest ID as a starting node
      */
     private List<Node> rearrangeNodes(List<Node> nodes) {
         int smallestNodeIx = 0;

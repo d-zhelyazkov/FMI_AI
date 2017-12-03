@@ -1,5 +1,6 @@
-package dzhelyazkov.travelling_salesman;
+package dzhelyazkov.travelling_salesman.node_supplier;
 
+import dzhelyazkov.travelling_salesman.Node;
 import dzhelyazkov.utils.Point2D;
 
 import java.util.Random;

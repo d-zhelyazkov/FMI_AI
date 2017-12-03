@@ -16,6 +16,9 @@ public class RandomRouteSupplier implements Supplier<Route> {
     @Override
     public Route get() {
         Collections.shuffle(nodes);
-        return new Route(new ArrayList<>(nodes));
+
+        return new RouteBuilder()
+                .setGenes(new ArrayList<>(nodes))
+                .build();
     }
 }

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Performs Fitness proportionate selection over a population.
@@ -30,11 +29,11 @@ public class RouletteWheelSelector<IndividualType extends Individual> implements
 
     @Override
     public void setPopulation(List<IndividualType> population) {
-        individualPortions = new ArrayList<>(population.size() + 1);
+        int individualsCount = population.size();
+        individualPortions = new ArrayList<>(individualsCount + 1);
         for (IndividualType individual : population) {
             individualPortions.add(new IndividualPortion(fitnessFunction.apply(individual).doubleValue(), individual));
         }
-        individualPortions.add(new NullIndividualProportion());
 
         Collections.sort(individualPortions);
 
@@ -45,7 +44,15 @@ public class RouletteWheelSelector<IndividualType extends Individual> implements
             portionsSum += individualPortions.portion;
             individualPortions.portion = portionsSum;
         }
+        if(Double.equal(portionsSum,0)) {
+            //case when all individuals have fitness 0
+            for(int i = 1; i <= individualsCount; i ++) {
+                individualPortions.get(individualsCount - i).portion = i;
+                portionsSum += i;
+            }
+        }
 
+        individualPortions.add(new NullIndividualProportion());
     }
 
     @Override

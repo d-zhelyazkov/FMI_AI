@@ -1,5 +1,6 @@
-package dzhelyazkov.travelling_salesman;
+package dzhelyazkov.travelling_salesman.node_supplier;
 
+import dzhelyazkov.travelling_salesman.Node;
 import dzhelyazkov.utils.Point2D;
 
 import java.util.function.Supplier;
@@ -15,7 +16,7 @@ public class NodesInLineSupplier implements Supplier<Node> {
         return node;
     }
 
-    static double getGoalPerimeter(int nodesCount) {
+    public static double getGoalPerimeter(int nodesCount) {
         return (nodesCount - 1) * 2 * Math.sqrt(2);
     }
 }
