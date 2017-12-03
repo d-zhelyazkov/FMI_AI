@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Applies cycle crossover over the two parent chromosomes.
@@ -41,10 +40,12 @@ public class CycleCrossoverOperator<GeneType extends Gene, ChromosomeType extend
         List<GeneType> child1Genes = new ArrayList<>(Collections.nCopies(genesCount, null));
         List<GeneType> child2Genes = new ArrayList<>(Collections.nCopies(genesCount, null));
 
-        Set<Integer> indexes = new HashSet<>(
-                IntStream.range(0, genesCount).boxed().collect(Collectors.toList()));
-        Map<GeneType, Integer> p1GeneIndexes = IntStream.range(0, genesCount).boxed()
-                .collect(Collectors.toMap(parent1Genes::get, i -> i));
+        Set<Integer> indexes = new HashSet<>(genesCount);
+        Map<GeneType, Integer> p1GeneIndexes = new HashMap<>(genesCount);
+        for (int i = 0; i < genesCount; i++) {
+            indexes.add(i);
+            p1GeneIndexes.put(parent1Genes.get(i), i);
+        }
 
         boolean bit = false;
         while (!indexes.isEmpty()) {
@@ -63,8 +64,8 @@ public class CycleCrossoverOperator<GeneType extends Gene, ChromosomeType extend
         }
 
         return Arrays.asList(
-                this.chromosomeBuilder.setGenes(child1Genes).build(),
-                this.chromosomeBuilder.setGenes(child2Genes).build()
+                chromosomeBuilder.setGenes(child1Genes).build(),
+                chromosomeBuilder.setGenes(child2Genes).build()
         );
     }
 }

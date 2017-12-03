@@ -27,11 +27,10 @@ public class SwapMutationOperator implements MutationOperator<Chromosome> {
     @Override
     public void mutate(Chromosome individual) {
         List genes = individual.getGenes();
+        int genesCount = genes.size();
         Random random = new Random();
         for (int i = 0; i < swaps; i++) {
-            int[] indexes = random.ints(0, genes.size()).distinct().limit(2).toArray();
-
-            Collections.swap(genes, indexes[0], indexes[1]);
+            Collections.swap(genes, random.nextInt(genesCount), random.nextInt(genesCount));
         }
     }
 }

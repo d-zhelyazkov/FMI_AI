@@ -1,5 +1,6 @@
 package dzhelyazkov.evolutinary_algorithms;
 
+import java.util.Collection;
 import java.util.List;
 
 public class EvolutionaryAlgorithm<IndividualType extends Individual> {
@@ -29,7 +30,7 @@ public class EvolutionaryAlgorithm<IndividualType extends Individual> {
 
         populationManager.sortPopulation(population);
 
-        List<IndividualType> offspring = populationManager.createOffspring(population);
+        Collection<IndividualType> offspring = populationManager.createOffspring(population);
 
         populationManager.removeWorstIndividuals(population);
 

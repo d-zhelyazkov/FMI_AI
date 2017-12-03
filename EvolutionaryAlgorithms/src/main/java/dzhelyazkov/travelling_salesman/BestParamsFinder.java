@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 
 class BestParamsFinder {
 
-    private static final int RETRIES = 5;
+    private static final int RETRIES = 1;
 
     private static final int BEST_STATISTICS = 10;
 
-    private static final float[] renewRatios = { 0.5f, 0.70f, 0.90f };
+    private static final float[] renewRatios = { 0.25f, 0.5f, 0.75f };
 
-    private static final float[] mutateRatios = { 0.5f, 0.70f, 0.90f };
+    private static final float[] mutateRatios = { 0.25f, 0.5f, 0.75f };
 
     @ParameterizedTest
     @ValueSource(ints = { 10, 20, 50, 100 })

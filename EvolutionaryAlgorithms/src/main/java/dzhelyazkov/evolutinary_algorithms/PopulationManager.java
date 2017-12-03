@@ -1,5 +1,6 @@
 package dzhelyazkov.evolutinary_algorithms;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface PopulationManager<IndividualType extends Individual> {
@@ -7,7 +8,7 @@ public interface PopulationManager<IndividualType extends Individual> {
 
     boolean isPopulationEvolvedEnough(List<IndividualType> population);
 
-    List<IndividualType> createOffspring(List<IndividualType> population);
+    Collection<IndividualType> createOffspring(List<IndividualType> population);
 
     void removeWorstIndividuals(List<IndividualType> population);
 

@@ -13,17 +13,17 @@ import java.util.stream.Stream;
 
 class TSGeneticAlgorithmSolution {
 
-    private static final int GEN_PRINT = 1000;
+    private static final int GEN_PRINT = 100;
 
-    private static final int GEN_CHECK = 100000;
+    private static final int GEN_CHECK = 10000;
 
     private static final int POPULATION_SIZE = 100;
 
     private static final int GENERATIONS = Integer.MAX_VALUE;
 
-    private static final float RENEW_RATIO = 0.8f;
+    private static final float RENEW_RATIO = 0.75f;
 
-    private static final float MUTATE_RATIO = 0.6f;
+    private static final float MUTATE_RATIO = 0.50f;
 
 
     private final RoutesManager routesManager;
@@ -47,7 +47,7 @@ class TSGeneticAlgorithmSolution {
     }
 
     TSGeneticAlgorithmSolution(float renewRatio, float mutateRatio, List<Node> nodes) {
-        population = Stream.generate(new RandomRouteSupplier(nodes)).limit(POPULATION_SIZE)
+        population = Stream.generate(new RandomRouteSupplier(nodes)).distinct().limit(POPULATION_SIZE)
                 .collect(Collectors.toList());
 
         RoutesFitnessRegister routesRegister = new RoutesFitnessRegister();

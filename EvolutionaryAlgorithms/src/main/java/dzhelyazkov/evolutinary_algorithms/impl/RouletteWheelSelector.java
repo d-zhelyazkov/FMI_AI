@@ -31,10 +31,9 @@ public class RouletteWheelSelector<IndividualType extends Individual> implements
     @Override
     public void setPopulation(List<IndividualType> population) {
         individualPortions = new ArrayList<>(population.size() + 1);
-        individualPortions.addAll(population.stream()
-                .map(individual ->
-                        new IndividualPortion(fitnessFunction.apply(individual).doubleValue(), individual))
-                .collect(Collectors.toList()));
+        for (IndividualType individual : population) {
+            individualPortions.add(new IndividualPortion(fitnessFunction.apply(individual).doubleValue(), individual));
+        }
         individualPortions.add(new NullIndividualProportion());
 
         Collections.sort(individualPortions);

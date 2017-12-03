@@ -6,11 +6,14 @@ import dzhelyazkov.evolutinary_algorithms.MutationOperator;
 import dzhelyazkov.evolutinary_algorithms.PopulationManager;
 import dzhelyazkov.genetic_algorithms.Chromosome;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,26 +55,37 @@ public class RoutesManager implements PopulationManager<Route> {
     }
 
     @Override
-    public List<Route> createOffspring(List<Route> population) {
+    public Collection<Route> createOffspring(List<Route> population) {
         int populationSize = population.size();
         int offspringSize = getRenewSize(populationSize);
         if(offspringSize == 0) {
             return Collections.emptyList();
         }
 
-        List<Route> offspring = new ArrayList<>(offspringSize);
+        Set<Route> offspring = new HashSet<>(offspringSize);
         crossoverSelector.setPopulation(population);
-        //create (offspringSize / 2) different pairs of parents and cross them
-        Stream.generate(() -> Stream.generate(crossoverSelector).distinct().limit(2).collect(Collectors.toSet()))
-                .distinct().limit(offspringSize / 2)
-                .forEach(routes -> offspring.addAll(crossoverOperator.createOffspring(routes)));
-        offspringSize = offspring.size();
 
-        int mutatedRoutesCount = (int) (offspringSize * mutateRatio);
-        int[] mutatedRoutesIXes =
-                new Random().ints(0, offspringSize).distinct().limit(mutatedRoutesCount).toArray();
-        for (int mutatedRouteIX : mutatedRoutesIXes) {
-            mutationOperator.mutate(offspring.get(mutatedRouteIX));
+        Random random = new Random();
+        //Iterator<Set<Route>> parentIterator = parentStream.iterator();
+        RouteBuilder routeBuilder = new RouteBuilder();
+        while (offspring.size() < offspringSize) {
+            Set<Route> parents = new HashSet<>();
+            while (parents.size() < 2) {
+                parents.add(crossoverSelector.get());
+            }
+
+            Collection<Route> children = crossoverOperator.createOffspring(parents);
+            for (Route child : children) {
+                if (random.nextDouble() < mutateRatio) {
+                    mutationOperator.mutate(child);
+                    child = routeBuilder.setGenes(child.getGenes()).build();
+                }
+
+                if (!fitnessRegister.isRegistered(child)) {
+                    offspring.add(child);
+                }
+            }
+
         }
 
         return offspring;

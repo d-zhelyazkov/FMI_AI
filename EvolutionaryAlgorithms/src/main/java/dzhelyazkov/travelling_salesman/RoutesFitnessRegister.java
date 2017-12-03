@@ -70,6 +70,10 @@ public class RoutesFitnessRegister implements Function<Route, Number> {
         routeEntries.remove(route);
     }
 
+    boolean isRegistered(Route route) {
+        return routeEntries.containsKey(route);
+    }
+
     class RouteEntry {
         double perimeter;
 
