@@ -1,4 +1,4 @@
-package dzhelyazkov.utils;
+package xrc.utils;
 
 public class ArrayUtils {
     public static int[][] clone2DArray(int[][] array) {

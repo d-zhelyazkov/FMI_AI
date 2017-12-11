@@ -1,6 +1,6 @@
-package dzhelyazkov.distance_calculator;
+package xrc.utils.distance_calculator;
 
-import dzhelyazkov.utils.Point;
+import xrc.utils.Point;
 
 public class EuclideanDistanceCalculator implements DistanceCalculator {
     @Override

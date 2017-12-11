@@ -1,4 +1,4 @@
-package dzhelyazkov.utils;
+package xrc.utils;
 
 import java.util.Collection;
 import java.util.Iterator;

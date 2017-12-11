@@ -1,4 +1,4 @@
-package dzhelyazkov.utils;
+package xrc.utils;
 
 public class Point2D extends Point {
 

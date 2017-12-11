@@ -1,4 +1,4 @@
-package dzhelyazkov.observer;
+package xrc.utils.observer;
 
 import java.util.ArrayList;
 import java.util.Collection;

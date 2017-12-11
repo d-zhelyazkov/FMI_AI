@@ -1,4 +1,4 @@
-package dzhelyazkov.observer;
+package xrc.utils.observer;
 
 public interface Observer {
 

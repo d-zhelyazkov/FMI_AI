@@ -1,4 +1,4 @@
-package dzhelyazkov.utils;
+package xrc.utils;
 
 public class Math {
     public static int dir(double number) {
