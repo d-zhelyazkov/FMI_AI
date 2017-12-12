@@ -11,9 +11,12 @@ import java.util.Map;
 
 /**
  * <a href="https://en.wikipedia.org/wiki/Naive_Bayes_classifier#Gaussian_naive_Bayes">
- *     Gaussian naive Bayes</a>
+ * Gaussian naive Bayes</a>
  */
 public class GaussianNaiveBayesClassifier extends NaiveBayesClassifier {
+
+    private static final double SQRT_2PI = Math.sqrt(2 * Math.PI);
+
     private Map<AttributeValue, ClassStats> classStatistics;
 
     @Override
@@ -26,23 +29,23 @@ public class GaussianNaiveBayesClassifier extends NaiveBayesClassifier {
             Collection<Instance> classInstanceSet = mapEntry.getValue();
             int instanceCount = classInstanceSet.size();
 
-            Map<Attribute, Double> mues = new HashMap<>(attributes.size());
-            Map<Attribute, Double> sigmas = new HashMap<>(attributes.size());
+            Map<Attribute, Double> means = new HashMap<>(attributes.size());
+            Map<Attribute, Double> standardDeviations = new HashMap<>(attributes.size());
             for (Attribute attribute : attributes) {
-                double mu = 0;
+                double mean = 0;
                 for (Instance instance : classInstanceSet)
-                    mu += instance.get(attribute).getDoubleValue();
-                mu /= instanceCount;
-                mues.put(attribute, mu);
+                    mean += instance.get(attribute).getDoubleValue();
+                mean /= instanceCount;
+                means.put(attribute, mean);
 
                 double sumOfDeviations = 0;
                 for (Instance instance : classInstanceSet)
-                    sumOfDeviations = Math.pow(instance.get(attribute).getDoubleValue() - mu, 2);
-                double sigma = Math.sqrt((1.0 / (instanceCount - 1)) * sumOfDeviations);
-                sigmas.put(attribute, sigma);
+                    sumOfDeviations = Math.pow(instance.get(attribute).getDoubleValue() - mean, 2);
+                double standardDeviation = Math.sqrt(sumOfDeviations / (instanceCount - 1));
+                standardDeviations.put(attribute, standardDeviation);
             }
 
-            classStatistics.put(classValue, new ClassStats(mues, sigmas));
+            classStatistics.put(classValue, new ClassStats(means, standardDeviations));
         }
 
     }
@@ -52,23 +55,22 @@ public class GaussianNaiveBayesClassifier extends NaiveBayesClassifier {
             AttributeValue attributeValue) {
         ClassStats stats = classStatistics.get(classValue);
 
-        double sigma = stats.sigmas.get(attribute);
-        double doubleSigmaSq = Math.pow(sigma, 2) * 2;
-        double mu = stats.mues.get(attribute);
+        double stdDev = stats.standardDeviations.get(attribute);
+        double mean = stats.means.get(attribute);
 
-        double ePow = -Math.pow(attributeValue.getDoubleValue() - mu, 2) / doubleSigmaSq;
-        return 1.0 / Math.sqrt(Math.PI * doubleSigmaSq) * Math.pow(Math.E, ePow);
+        return Math.exp(-Math.pow(attributeValue.getDoubleValue() - mean, 2) / (2 * stdDev))
+                / (SQRT_2PI * stdDev);
 
     }
 
     private class ClassStats {
-        final Map<Attribute, Double> mues;
+        final Map<Attribute, Double> means;
 
-        final Map<Attribute, Double> sigmas;
+        final Map<Attribute, Double> standardDeviations;
 
-        ClassStats(Map<Attribute, Double> mues, Map<Attribute, Double> sigmas) {
-            this.mues = mues;
-            this.sigmas = sigmas;
+        ClassStats(Map<Attribute, Double> means, Map<Attribute, Double> standardDeviations) {
+            this.means = means;
+            this.standardDeviations = standardDeviations;
         }
     }
 }

@@ -1,5 +1,7 @@
 package xrc.ai.ml.weka;
 
+import weka.core.Attribute;
+import weka.core.Instance;
 import xrc.ai.ml.instance.AttributeValue;
 
 public class WekaAttributeValue implements AttributeValue {
@@ -15,6 +17,12 @@ public class WekaAttributeValue implements AttributeValue {
     public WekaAttributeValue(double value, String stringValue) {
         this.value = value;
         this.stringValue = stringValue;
+    }
+
+    public WekaAttributeValue(Instance instance, Attribute attribute) {
+        value = instance.value(attribute);
+        stringValue = (attribute.isNominal() || attribute.isString() || attribute.isDate())
+                ? instance.stringValue(attribute) : "";
     }
 
     @Override

@@ -18,10 +18,7 @@ public class WekaInstanceAdapter implements xrc.ai.ml.instance.Instance {
     @Override
     public AttributeValue get(xrc.ai.ml.instance.Attribute attribute) {
         Attribute wekaAttr = ((WekaAttributeAdapter) attribute).getAttribute();
-        double value = instance.value(wekaAttr);
-        return (wekaAttr.isNominal() || wekaAttr.isString() || wekaAttr.isDate())
-                ? new WekaAttributeValue(value, instance.stringValue(wekaAttr))
-                : new WekaAttributeValue(value);
+        return new WekaAttributeValue(instance, wekaAttr);
     }
 
     @Override
