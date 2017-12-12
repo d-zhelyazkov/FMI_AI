@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("WeakerAccess")
 public abstract class NaiveBayesClassifier implements Classifier {
 
     protected Map<AttributeValue, Double> classProbabilities;

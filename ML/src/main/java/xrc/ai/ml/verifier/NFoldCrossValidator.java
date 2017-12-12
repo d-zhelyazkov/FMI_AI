@@ -11,15 +11,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class NFoldCrossValidator implements ClassifierValidator {
+public class NFoldCrossValidator implements CompositeClassifierValidator {
 
     private final Collection<ClassifierValidator> validators;
 
-    private final double[] lastEvaluations;
-
     public NFoldCrossValidator(int N, InstanceSet instanceSet, Attribute classAttribute) {
         validators = new ArrayList<>(N);
-        lastEvaluations = new double[N];
 
         Collection<Attribute> attributes = instanceSet.getAttributes();
         List<Instance> instances = new ArrayList<>(instanceSet.getInstances());
@@ -39,21 +36,14 @@ public class NFoldCrossValidator implements ClassifierValidator {
         }
     }
 
+
     @Override
     public double evaluateScore(Classifier classifier) {
         double sumOfScores = 0;
-        int scoreIx = 0;
-        for (ClassifierValidator verifier : validators) {
-            double score = verifier.evaluateScore(classifier);
-            sumOfScores += score;
-
-            lastEvaluations[scoreIx++] = score;
+        for (ClassifierValidator validator : validators) {
+            sumOfScores += evaluateValidatorScore(validator, classifier);
         }
 
         return sumOfScores / validators.size();
-    }
-
-    public double[] getLastEvaluations() {
-        return lastEvaluations;
     }
 }
