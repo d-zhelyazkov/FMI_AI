@@ -1,24 +1,37 @@
 package dzhelyazkov.travelling_salesman;
 
+import dzhelyazkov.travelling_salesman.node_supplier.ScannerNodeSupplier;
+
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dzhelyazkov.travelling_salesman.TSGeneticAlgorithmSolution.MIN_NODES_COUNT;
+
 public class Main {
 
-
-    private static final int GENES_COUNT = 20;
-
-    private static final float REPLACE_PART = 0.5f;
-
-    private static final float MUTATE_RATIO = 0.7f;
-
-
     public static void main(String[] args) {
-        List<Node> nodes = Stream.generate(new NodesInLineSupplier()).limit(GENES_COUNT).collect(Collectors.toList());
 
-        TSGeneticAlgorithmSolution solution = new TSGeneticAlgorithmSolution(REPLACE_PART, MUTATE_RATIO, nodes);
-        solution.execute(10000);
+        List<Node> nodes;
+        double goalPerimeter;
+        try (Scanner scanner = new Scanner(System.in)) {
+            int nodesCount;
+            do {
+                System.out.printf("Number of nodes (min %d): ", MIN_NODES_COUNT);
+                nodesCount = scanner.nextInt();
+            } while (nodesCount < MIN_NODES_COUNT);
+
+            System.out.printf("Input %d nodes in format 'id x y'\n", nodesCount);
+            nodes = Stream.generate(new ScannerNodeSupplier(scanner))
+                    .limit(nodesCount).distinct().collect(Collectors.toList());
+
+            System.out.print("Desired perimeter: ");
+            goalPerimeter = scanner.nextDouble();
+        }
+
+        TSGeneticAlgorithmSolution solution = new TSGeneticAlgorithmSolution(nodes, goalPerimeter);
+        solution.execute();
 
     }
 

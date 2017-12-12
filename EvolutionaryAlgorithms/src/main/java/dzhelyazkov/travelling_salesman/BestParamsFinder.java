@@ -1,5 +1,6 @@
 package dzhelyazkov.travelling_salesman;
 
+import dzhelyazkov.travelling_salesman.node_supplier.NodesInLineSupplier;
 import dzhelyazkov.utils.Double;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ class BestParamsFinder {
     private static final float[] mutateRatios = { 0.25f, 0.5f, 0.75f };
 
     @ParameterizedTest
-    @ValueSource(ints = { 10, 20, 50, 100 })
+    @ValueSource(ints = {7, 10, 20, 50, 100 })
     void findParams(int nodesCount) {
         double goalP = NodesInLineSupplier.getGoalPerimeter(nodesCount);
         System.out.printf("FINDING PARAMS FOR %d NODES.\nGoal perimeter: %f\n\n", nodesCount, goalP);
@@ -44,8 +45,8 @@ class BestParamsFinder {
                     statisticsPerTry.add(new Statistic(
                             renewRatio, mutateRatio, solution.getBestPerimeter(), solution.getGenerations()));
 
-//                    if (solution.isInLocalMinimum()) {
-//                        System.out.println("Local minimum achieved.");
+//                    if (solution.isInLocalExtreme()) {
+//                        System.out.println("Local extreme achieved.");
 //                        break;
 //                    }
                 }

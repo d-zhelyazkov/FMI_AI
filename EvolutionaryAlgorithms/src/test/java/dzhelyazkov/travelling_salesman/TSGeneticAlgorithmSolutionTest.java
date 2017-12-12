@@ -1,5 +1,6 @@
 package dzhelyazkov.travelling_salesman;
 
+import dzhelyazkov.travelling_salesman.node_supplier.NodesInLineSupplier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -11,7 +12,7 @@ import java.util.stream.Stream;
 class TSGeneticAlgorithmSolutionTest {
 
     @ParameterizedTest
-    @ValueSource(ints = { 10, 20, 50, 100 })
+    @ValueSource(ints = {7, 10, 20, 50, 100 })
     void test(int nodesCount) {
         System.out.printf("Testing Traveler salesman GA solution with %d nodes.\n\n", nodesCount);
 

@@ -3,6 +3,7 @@ package dzhelyazkov.travelling_salesman;
 import dzhelyazkov.genetic_algorithms.Chromosome;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Route implements Chromosome<Node> {
 
@@ -32,5 +33,10 @@ public class Route implements Chromosome<Node> {
     @Override
     public int hashCode() {
         return nodes.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return nodes.stream().map(Node::getID).collect(Collectors.toList()).toString();
     }
 }
