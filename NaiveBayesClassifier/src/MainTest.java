@@ -46,7 +46,7 @@ class MainTest {
         System.out.println("Classified as: " + classValue);
 
         Assertions.assertEquals(
-                new WekaAttributeValue(testInstance.value(classAttribute)),
+                new WekaAttributeValue(testInstance, classAttribute),
                 classValue);
     }
 
