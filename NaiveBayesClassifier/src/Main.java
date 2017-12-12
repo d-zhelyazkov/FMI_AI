@@ -1,45 +1,31 @@
-import weka.core.Instance;
+import weka.core.Attribute;
 import weka.core.Instances;
-import weka.core.converters.ArffLoader;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Normalize;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import xrc.ai.ml.Classifier;
+import xrc.ai.ml.algorithms.GaussianNaiveBayesClassifier;
+import xrc.ai.ml.verifier.NFoldCrossValidator;
+import xrc.ai.ml.weka.WekaAttributeAdapter;
+import xrc.ai.ml.weka.WekaInstanceSetAdapter;
 
 public class Main {
-    static Instances structure;
 
     public static void main(String[] args) throws Exception {
-        read();
 
-        //applyFilter();
+        DataLoader dataLoader = new DataLoader();
+        Instances dataSet = dataLoader.loadDataSet();
+        Attribute classAttribute = dataSet.attribute(dataSet.numAttributes() - 1);
 
-        Instance testInstance = structure.get(structure.numInstances() - 1);
-        structure.remove(structure.numInstances() - 1);
-        structure.setClassIndex(structure.numAttributes() - 1);
-        System.out.println("Real class: " + testInstance.stringValue(testInstance.numValues() - 1));
+        Classifier classifier = new GaussianNaiveBayesClassifier();
+        NFoldCrossValidator validator = new NFoldCrossValidator(10,
+                new WekaInstanceSetAdapter(dataSet),
+                new WekaAttributeAdapter(classAttribute));
 
-        NaiveBayesClassifier classifier = new NaiveBayesClassifier(structure);
-        String aClass = classifier.classify(testInstance);
-        System.out.println(aClass);
-    }
-
-    static void read() throws IOException {
-        String filePath = "C:\\Program Files\\Weka-3-8\\data\\iris.arff";
-        ArffLoader loader = new ArffLoader();
-        loader.setFile(new File(filePath));
-
-        //structure = loader.getStructure();
-        //structure.setClassIndex(structure.numAttributes() - 1);
-        structure = loader.getDataSet();
-        System.out.println(structure);
+        double score = validator.evaluateScore(classifier);
+        double[] lastEvaluations = validator.getLastEvaluations();
+        for (int i = 0; i < lastEvaluations.length; i++) {
+            System.out.printf("Evaluation %d score: %.2f%%\n", i + 1, lastEvaluations[i] * 100);
+        }
+        System.out.printf("Total score: %.2f%%\n", score * 100);
 
     }
+
 }
